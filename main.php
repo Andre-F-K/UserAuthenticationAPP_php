@@ -23,7 +23,8 @@
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="h-100 d-flex align-items-center justify-content-center" >
       <div class="input-group mb-3 m-2 w-25 ">
         <div class="input-group-prepend">
-          <button class="btn btn-outline-secondary bg-secondary text-dark " type="submit">Search</button>
+          <button class="btn btn-outline-secondary bg-secondary text-dark " id="txtHint" type="submit">Search</button>
+          <!-- <p>Suggestions: <span id="txtHint"></span></p> -->
         </div>
         <input type="text" class="form-control" placeholder="" name="search" aria-label="" aria-describedby="basic-addon1">
       </div>
@@ -63,7 +64,7 @@
   $_SESSION["search"] = $search;
   $_SESSION["sortBy"] = $sortBy;
 
-  echo $_SESSION["sortBy"];
+
 
 
   if ($search !== null){
@@ -113,7 +114,23 @@
 
   ?>
 
-
+<script>
+function showHint(str) {
+  if (str.length == 0) {
+    document.getElementById("txtHint").innerHTML = "";
+    return;
+  } else {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("txtHint").innerHTML = this.responseText;
+      }
+    };
+    xmlhttp.open("GET", "gethint.php?q=" + str, true);
+    xmlhttp.send();
+  }
+}
+</script>
 </body>
 
 </html>

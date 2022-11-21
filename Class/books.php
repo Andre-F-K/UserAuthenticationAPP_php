@@ -133,7 +133,7 @@ class Book
         $conn = new mysqli($servername, $username, $password);
 
         $userSearch = $_SESSION["search"];
-        // echo $userSearch;
+
 
         $sql = "SELECT *
                 FROM library.books
@@ -143,7 +143,6 @@ class Book
         
         $result = mysqli_fetch_assoc( $conn->query($sql));
 
-        // print_r ($result);
 
 
 
@@ -177,6 +176,12 @@ class Book
 
 
     public static function sortBooks(){
+
+        // ini_set('display_errors', 1);
+        // ini_set('display_startup_errors', 1);
+        // error_reporting(E_ALL);
+
+
         $servername = "localhost";
         $username = "root";
         $password = "root";
@@ -195,7 +200,7 @@ class Book
         
         $result = mysqli_fetch_assoc( $conn->query($sql));
 
-        print_r( $result);
+        // print_r( $result);
     } 
 
 
@@ -211,85 +216,56 @@ class Book
         // Create connection
         $conn = new mysqli($servername, $username, $password);
 
-        $sql = "SELECT * FROM library.books ";
+
+
+        $searchBook = $_SESSION["searchBook"];
+        $newBookName = $_SESSION["newBookName"];
+        $newAuthor = $_SESSION["newAuthor"] ;
+        $newAge = $_SESSION["newAge"] ;
+        $newGenre = $_SESSION["newGenre"] ;
+        $newReleaseDate =  $_SESSION["newReleaseDate"] ;
+        $newReleaseDateInt = (int)$newReleaseDate;
+
+
+
+        $sql = "SELECT *
+        FROM library.books
+        WHERE  (book = '$searchBook') ";
 
         $conn->query($sql);
-        $result = $conn->query($sql);
-        $numRows = mysqli_num_rows($result);
-        $rowUsers = mysqli_fetch_assoc($conn->query($sql));
 
-        $updatedAuth = $_POST['author'];
-        $updatedBook = $_POST['book'];
-        $updatedGenre = $_POST['genre'];
-        $updatedReleaseDate = $_POST['releaseDate'];
-        $delete = $_POST['delete'];
-        
-        echo $delete;
-        echo $rowUsers['author'];
-    
-        echo '<div class="row  w-75" style="margin-right: 15px; margin-left: 15px;">';
-        
-        while ($rowUsers = mysqli_fetch_array($result)) {
-      echo '<div class="card text-center p-2 w-25 col-6 pb-2">
-                  <form method="POST" action="#">
-                      <input class="w-100 card-header" id="author" name="author" placeholder="' . $rowUsers['author'] . ' - ' . $rowUsers['age'] . '"></input>
-                        <div class="card-body">
-                          <input class="w-100 card-title" id="book" name="book" placeholder="' . $rowUsers['book'] . '">
-                          <p class="card-text"><input class="w-100" id="genre" name="genre" placeholder="' . $rowUsers['genre'] . '"></p>
-                          <div class="form-check">
-                              <input class="form-check-input" type="checkbox" name="delete" value="delete" id="flexCheckIndeterminate">
-                              <label class="form-check-label"  for="flexCheckIndeterminate">
-                                Delete
-                              </label>
-                          </div>
-                          <button type="submit" class="btn btn-primary bg-secondary text-dark">Save</button>
-                        </div>
-                      <div class="card-footer text-muted">
-                        Release date :<input   type="number" "class="w-100" name="releaseDate" id="releaseDate" placeholder="' . $rowUsers['releaseDate'] . '">
-                      </div>
-                      <div class="card-footer text-muted">
-                      <input   type="number" "class="w-100" name="releaseDate" id="releaseDate" hidden value="' . $rowUsers['id'] . '">
-                      </div>
-                </form>
-            </div>';
-            // echo "<script> document.getElementById('author').placeholder = '$updatedAuth' ;
-            //                document.getElementById('book').placeholder = '$updatedBook' ;
-            //                document.getElementById('genre').placeholder = '$updatedGenre' ;
-            //                document.getElementById('releaseDate').placeholder = '$updatedReleaseDate' ;
-            //       </script>";
-
-
-            
+        $result = mysqli_fetch_assoc( $conn->query($sql));
 
 
 
-        }
+        echo '<div class="h-100 d-flex align-items-center justify-content-center pb-1" >
+        <div class="card text-center w-75 ">
+                <div class="card-header">
+                ' . $result['author'] . '
+                </div>
+                    <div class="card-body">
+                        <h5 class="card-title">' . $result['book'] . '</h5>
+                        <p class="card-text">' . $result['genre'] . '</p>
+                        <a href="#" class="btn bg-secondary text-dark">Read Book</a>
+                    </div>
+                <div class="card-footer text-muted">' . $result['releaseDate'] . '</div>
+        </div>
+        </div>';
 
-        $sqlUpdate = "UPDATE library.books
-            SET author = '$updatedAuth', genre = '$updatedGenre' , book = '$updatedBook', releaseDate = '$updatedReleaseDate'
-            WHERE id = '$rowUsers[id]'";
+      
+      $sqlChange = "UPDATE library.books
+                    SET author = '$newAuthor', age = '$newAge', genre = '$newGenre' , book = '$newBookName', releaseDate = '$newReleaseDateInt'
+                    WHERE book = '$searchBook'";
 
-          $conn->query($sqlUpdate);
-
-        
-        echo '</div>';
-        
-
-
-
-
-
-if ($conn->query($sqlUpdate) === TRUE) {
-    // print_r("SUCCSESS");
-  } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-  }
-
+      $conn->query($sqlChange);
 
     }
 
 
-    // $author,$age, $genre, $book, $releaseDate
+
+
+
+
     public function addBooks(){
 
 
@@ -301,13 +277,13 @@ if ($conn->query($sqlUpdate) === TRUE) {
 
 
 
-        // echo $age;
+  
 
         // Create connection
         $conn = new mysqli($servername, $username, $password);
 
         
-        $sql = "INSERT INTO  library.books (author, age , genre, book, releaseDate  ) 
+        $sql = "INSERT INTO library.books (author, age , genre, book, releaseDate  ) 
                 VALUES  ( '$this->author','$this->age', '$this->genre', '$this->book', '$this->releaseDate')";
 
 
@@ -317,15 +293,6 @@ if ($conn->query($sqlUpdate) === TRUE) {
 
 
 
-
-        // if ($conn->query($sql) === TRUE) {
-        //     // print_r("SUCCSESS");
-        //   } else {
-        //     echo "Error: " . $sql . "<br>" . $conn->error;
-        //   }
-
-
-          return;
 
 
     }
